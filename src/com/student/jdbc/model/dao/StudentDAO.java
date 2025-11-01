@@ -14,69 +14,80 @@ public class StudentDAO {
 	private Statement stmt = null;
 	private PreparedStatement pstmt = null;
 	private ResultSet rs = null;
+
 	/*
-	 * 데이터 형식 
-	 * STD_NO NUMBER PRIMARY KEY, 
-	 * STD_NAME NVARCHAR2(5) NOT NULL, 
-	 * STD_AGE NUMBER NOT NULL, 
-	 * MAJOR NVARCHAR2(10) NOT NULL, 
-	 * ENT_DATE DATE DEFAULT SYSDATE
+	 * 데이터 형식 STD_NO NUMBER PRIMARY KEY, STD_NAME NVARCHAR2(5) NOT NULL, STD_AGE
+	 * NUMBER NOT NULL, MAJOR NVARCHAR2(10) NOT NULL, ENT_DATE DATE DEFAULT SYSDATE
 	 */
-	/**1. 학생 등록
+	/**
+	 * 1. 학생 등록
+	 * 
 	 * @param conn
 	 * @param student
 	 * @return
 	 * @throws Exception
 	 */
-	public int registerStudent(Connection conn, Student student) throws Exception{
+	public int registerStudent(Connection conn, Student student) throws Exception {
 		int result = 0;
 
 		try {
-			
+
 			String sql = """
-				INSERT INTO KH_STUDENT
-				VALUES(?, ?, ?, ?, ?)
-				""";
+					INSERT INTO KH_STUDENT
+					VALUES(?, ?, ?, ?, ?, DEFAULT)
+					""";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, student.getStdNo());
+			pstmt.setString(1, student.getStdNo());
 			pstmt.setString(2, student.getStdName());
 			pstmt.setInt(3, student.getStdAge());
 			pstmt.setString(4, student.getMajor());
 			pstmt.setString(5, student.getEntDate());
-			
+
 			result = pstmt.executeUpdate();
-			
+
 		} finally {
 			close(pstmt);
 		}
 		return result;
 	}
-	/**2. 전체 학생 조회
+
+	/**
+	 * 2. 전체 학생 조회
+	 * 
 	 * @param conn
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Student> getAllStudents(Connection conn) throws Exception{
+	public List<Student> getAllStudents(Connection conn) throws Exception {
 		List<Student> studentList = new ArrayList<>();
 		Student student = null;
 		try {
 			String sql = """
-					SELECT STD_NO, STD_NAME, STD_AGE, MAJOR, TO_CHAR(ENT_DATE, 'YYYY"년" MM"월" DD"일"') "ENT_DATE"
+					SELECT STD_NO, STD_NAME, STD_AGE, MAJOR, TO_CHAR(ENT_DATE, 'YYYY-MM-DD') "ENT_DATE", STATUS
 					FROM KH_STUDENT
+					ORDER BY MAJOR, STD_NO, STD_NAME
 					""";
-			
+
 			pstmt = conn.prepareStatement(sql);
-			
+
 			rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
-				int stdId = rs.getInt("STD_NO");
+
+			while (rs.next()) {
+				String stdNo = rs.getString("STD_NO");
 				String stdName = rs.getString("STD_NAME");
 				int stdAge = rs.getInt("STD_AGE");
 				String stdMajor = rs.getString("MAJOR");
 				String stdEntDate = rs.getString("ENT_DATE");
+				String status = rs.getString("STATUS");
 				
-				student = new Student(stdId, stdName, stdAge, stdMajor, stdEntDate);
+				student = new Student();
+				
+				student.setStdNo(stdNo);
+				student.setStdName(stdName);
+				student.setStdAge(stdAge);
+				student.setMajor(stdMajor);
+				student.setEntDate(stdEntDate);
+				student.setStatus(status);
 				
 				studentList.add(student);
 			}
@@ -84,45 +95,47 @@ public class StudentDAO {
 			close(rs);
 			close(pstmt);
 		}
-		
-		
+
 		return studentList;
 	}
-	
-	/**3-1. 학생 정보 확인(학번, 이름, 전공으로 필터 처리)
+
+	/**
+	 * 3-1. 학생 정보 확인(학번, 이름, 전공으로 필터 처리)
+	 * 
 	 * @param conn
 	 * @param student
 	 * @return
 	 */
-	public Student checkStd(Connection conn, Student student) throws Exception{
+	public Student checkStd(Connection conn, String stdNo) throws Exception {
 		Student stdInfo = null;
-		
+
 		try {
 			String sql = """
-					SELECT STD_NO, STD_AGE, STD_NAME, MAJOR
+					SELECT STD_NO, STD_AGE, STD_NAME, MAJOR, STATUS
 					FROM KH_STUDENT
-					WHERE STD_NO = ? AND STD_NAME = ? AND MAJOR = ?
+					WHERE STD_NO = ?
 					""";
-			
+
 			pstmt = conn.prepareStatement(sql);
-			
-			pstmt.setInt(1, student.getStdNo());
-			pstmt.setString(2, student.getStdName());
-			pstmt.setString(3, student.getMajor());
-			
+
+			pstmt.setString(1, stdNo);
+
 			rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
-				int stdNo = rs.getInt("STD_NO");
+
+			if (rs.next()) {
+				String stdNoInfo = rs.getString("STD_NO");
 				int stdAge = rs.getInt("STD_AGE");
 				String stdName = rs.getString("STD_NAME");
 				String major = rs.getString("MAJOR");
+				String status = rs.getString("STATUS");
+
 				stdInfo = new Student();
-				
-				stdInfo.setStdNo(stdNo);
+
+				stdInfo.setStdNo(stdNoInfo);
 				stdInfo.setStdAge(stdAge);
 				stdInfo.setStdName(stdName);
 				stdInfo.setMajor(major);
+				stdInfo.setStatus(status);
 			}
 		} finally {
 			close(rs);
@@ -130,14 +143,17 @@ public class StudentDAO {
 		}
 		return stdInfo;
 	}
-	/** 3-2. 이름 수정
+
+	/**
+	 * 3-2. 이름 수정
+	 * 
 	 * @param conn
 	 * @param newName
 	 * @return
 	 */
-	public int updateStdName(Connection conn, int stdNo, String newName) throws Exception{
+	public int updateStdName(Connection conn, String stdNo, String newName) throws Exception {
 		int result = 0;
-		
+
 		try {
 			String sql = """
 					UPDATE KH_STUDENT
@@ -145,26 +161,29 @@ public class StudentDAO {
 					WHERE STD_NO = ?
 					""";
 			pstmt = conn.prepareStatement(sql);
-			
+
 			pstmt.setString(1, newName);
-			pstmt.setInt(2, stdNo);
-			
+			pstmt.setString(2, stdNo);
+
 			result = pstmt.executeUpdate();
-			
+
 		} finally {
 			close(pstmt);
 		}
-		
+
 		return result;
 	}
-	/** 3-3. 나이 수정
+
+	/**
+	 * 3-3. 나이 수정
+	 * 
 	 * @param conn
 	 * @param newAge
 	 * @return
 	 */
-	public int updateStdAge(Connection conn, int stdNo, String newAge) throws Exception{
+	public int updateStdAge(Connection conn, String stdNo, String newAge) throws Exception {
 		int result = 0;
-		
+
 		try {
 			String sql = """
 					UPDATE KH_STUDENT
@@ -172,26 +191,29 @@ public class StudentDAO {
 					WHERE STD_NO = ?
 					""";
 			pstmt = conn.prepareStatement(sql);
-			
+
 			pstmt.setString(1, newAge);
-			pstmt.setInt(2, stdNo);
-			
+			pstmt.setString(2, stdNo);
+
 			result = pstmt.executeUpdate();
-			
+
 		} finally {
 			close(pstmt);
 		}
-		
+
 		return result;
 	}
-	/** 3-4 학과(학부) 수정
+
+	/**
+	 * 3-4 학과(학부) 수정
+	 * 
 	 * @param conn
 	 * @param newMajor
 	 * @return
 	 */
-	public int updateStdMajor(Connection conn, int stdNo, String newMajor) throws Exception{
+	public int updateStdMajor(Connection conn, String stdNo, String newMajor) throws Exception {
 		int result = 0;
-		
+
 		try {
 			String sql = """
 					UPDATE KH_STUDENT
@@ -199,25 +221,28 @@ public class StudentDAO {
 					WHERE STD_NO = ?
 					""";
 			pstmt = conn.prepareStatement(sql);
-			
+
 			pstmt.setString(1, newMajor);
-			pstmt.setInt(2, stdNo);
-			
+			pstmt.setString(2, stdNo);
+
 			result = pstmt.executeUpdate();
-			
+
 		} finally {
 			close(pstmt);
 		}
-		
+
 		return result;
 	}
-	/** 4. 학번 기준 삭제
+
+	/**
+	 * 4. 학번 기준 삭제
+	 * 
 	 * @param conn
 	 * @param stdNo
 	 * @return
 	 * @throws Exception
 	 */
-	public int deleteStudentById(Connection conn, int stdNo) throws Exception{
+	public int deleteStudentById(Connection conn, String stdNo) throws Exception {
 		int result = 0;
 		try {
 			String sql = """
@@ -225,55 +250,128 @@ public class StudentDAO {
 					WHERE STD_NO = ?
 					""";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, stdNo);
+			pstmt.setString(1, stdNo);
 			result = pstmt.executeUpdate();
-			
+
 		} finally {
 			close(pstmt);
 		}
 		return result;
 	}
-	/** 5. 전공별 학생 조회(특정 전공 학생만 필터링 조회)
+
+	/**
+	 * 5. 전공별 학생 조회(특정 전공 학생만 필터링 조회)
+	 * 
 	 * @param conn
 	 * @param major
 	 * @return
 	 * @throws Exception
 	 */
 	public List<Student> getStudentsByMajor(Connection conn, String major) throws Exception {
-		
+
 		List<Student> stdList = new ArrayList<>();
 		try {
 			String sql = """
-					SELECT STD_NO, STD_NAME, STD_AGE, MAJOR, TO_CHAR(ENT_DATE, 'YYYY"년" MM"월" DD"일"') "ENT_DATE"
+					SELECT STD_NO, STD_NAME, STD_AGE, MAJOR, TO_CHAR(ENT_DATE, 'YYYY-MM-DD') "ENT_DATE", STATUS
 					FROM KH_STUDENT
 					WHERE MAJOR = ?
 					""";
-		    pstmt = conn.prepareStatement(sql);
-		    
-		    pstmt.setString(1, major);
-		    
-		    rs = pstmt.executeQuery();
-		    
-		    while(rs.next()) {
-		    	int stdNo = rs.getInt("STD_NO");
-		    	String stdName = rs.getString("STD_NAME");
-		    	int stdAge = rs.getInt("STD_AGE");
-		    	String majorInfo = rs.getString("MAJOR");
-		    	String entDate = rs.getString("ENT_DATE");
-		    	
-		    	Student student = new Student(stdNo, stdName, stdAge, majorInfo, entDate);
-		    	
-		    	stdList.add(student);
-		    }
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, major);
+
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				String stdNo = rs.getString("STD_NO");
+				String stdName = rs.getString("STD_NAME");
+				int stdAge = rs.getInt("STD_AGE");
+				String majorInfo = rs.getString("MAJOR");
+				String entDate = rs.getString("ENT_DATE");
+				String status = rs.getString("STATUS");
+
+				
+				Student student = new Student();
+				student.setStdNo(stdNo);
+				student.setStdName(stdName);
+				student.setStdAge(stdAge);
+				student.setMajor(major);
+				student.setEntDate(entDate);
+				student.setStatus(status);
+				
+				stdList.add(student);
+			}
 		} finally {
 			close(rs);
 			close(pstmt);
 		}
-		
+
 		return stdList;
 	}
 
+	/**
+	 * 6. 재학 상태 관리
+	 * 
+	 * @param conn
+	 * @param stdNo
+	 * @param input
+	 * @return
+	 * @throws Exception
+	 */
+	public int manageEnrollmentStatus(Connection conn, String stdNo, int input) throws Exception {
+		int result = 0;
+
+		String changeStatus = "";
+
+		if (input == 1) {
+			changeStatus = "재학";
+		} else if (input == 2) {
+			changeStatus = "휴학";
+		} else if (input == 3) {
+			changeStatus = "졸업";
+		} else if (input == 4) {
+			changeStatus = "제적";
+		}
+
+		try {
+			String checkSql = """
+					SELECT STATUS
+					FROM KH_STUDENT
+					WHERE STD_NO = ?
+					""";
+			pstmt = conn.prepareStatement(checkSql);
+			pstmt.setString(1, stdNo);
+
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				String status = rs.getString("STATUS");
+				if (status.equals(changeStatus)) {
+					return -1;
+				}
+			}
+
+			String sql = """
+					UPDATE KH_STUDENT
+					SET STATUS = ?
+					WHERE STD_NO = ?
+					""";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, changeStatus);
+			pstmt.setString(2, stdNo);
+
+			result = pstmt.executeUpdate();
+
+		} finally {
+			close(pstmt);
+			close(rs);
+		}
+
+		return result;
+	}
+
 }
+
 
 
 
