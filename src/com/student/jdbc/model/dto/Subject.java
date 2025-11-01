@@ -22,7 +22,7 @@ public class Subject {
 	
 	@Override
 	public String toString() {
-	    return String.format("%-10s  %-15s  %-6s  %-3d  %-8d  %-2d",
+	    return String.format("%-10s   %-15s   %-8s   %-4d   %-8d   %-3d",
 	            subjectCode, subjectName, professor, credit, openYear, semester);
 	}
 

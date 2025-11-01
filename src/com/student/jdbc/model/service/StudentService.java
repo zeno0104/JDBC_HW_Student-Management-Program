@@ -1,7 +1,6 @@
 package com.student.jdbc.model.service;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.student.jdbc.common.JDBCTemplate.*;

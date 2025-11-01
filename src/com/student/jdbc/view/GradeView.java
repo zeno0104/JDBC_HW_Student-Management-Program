@@ -72,8 +72,9 @@ public class GradeView {
 				}
 
 				System.out.println("\n=== " + studentInfo.getMajor() + " 개설 과목 목록 ===");
-				System.out.println("코드       │ 과목명           │ 교수명   │ 학점 │ 개설년도 │ 학기");
-				System.out.println("──────────────────────────────────────────────");
+				System.out.printf("%-10s │ %-15s │ %-8s │ %-4s │ %-8s │ %-3s%n", "코드", "과목명", "교수명", "학점", "개설년도",
+						"학기");
+				System.out.println("──────────────────────────────────────────────────────────────");
 
 				for (Subject subject : subjectList) {
 					System.out.println(subject.toString());
@@ -138,15 +139,14 @@ public class GradeView {
 	 */
 	public void updateStudentGrade() throws Exception {
 		List<Student> studentGradeList = new ArrayList<Student>();
-		
-		
+
 		System.out.println("\n===성적 수정===");
 		System.out.print("학번 입력 : ");
 		String stdNo = sc.next();
-		
+
 		Student studentInfo = checkStd(stdNo);
-		
-		if(studentInfo == null) {
+
+		if (studentInfo == null) {
 			System.out.println("해당 학생이 존재하지 않습니다.");
 			return;
 		}
@@ -157,54 +157,54 @@ public class GradeView {
 			return;
 		}
 		System.out.println("───────────────────────────────────────────────────────────");
-		System.out.printf("학번 : %s | 이름 : %s | 전공 : %s\n", studentInfo.getStdNo(), studentInfo.getStdName(), studentInfo.getMajor());
+		System.out.printf("학번 : %s | 이름 : %s | 전공 : %s\n", studentInfo.getStdNo(), studentInfo.getStdName(),
+				studentInfo.getMajor());
 		System.out.println("───────────────────────────────────────────────────────────");
-		
+
 		System.out.println("      과목 코드      |      과목명      │   점수    |   학점");
 		System.out.println("───────────────────────────────────────────────────────────");
 
 		for (Student student : studentGradeList) {
-			System.out.printf("         %-15s %-15s %-10d %s\n", student.getSubjectCode() ,student.getSubjectName(), student.getScore(), student.getGrade());
+			System.out.printf("         %-15s %-15s %-10d %s\n", student.getSubjectCode(), student.getSubjectName(),
+					student.getScore(), student.getGrade());
 		}
 		System.out.println("───────────────────────────────────────────────────────────");
 
-		
-
 		boolean flag = false;
 		String changeSubCode = "";
-		
+
 		while (true) {
 			System.out.print("수정할 과목 코드 입력 : ");
 			changeSubCode = sc.next();
-			for(Student grade : studentGradeList) {
-				if(grade.getSubjectCode().equals(changeSubCode)) {
+			for (Student grade : studentGradeList) {
+				if (grade.getSubjectCode().equals(changeSubCode)) {
 					flag = true;
 					break;
 				}
 			}
-			if(!flag) {
+			if (!flag) {
 				System.out.print("이수한 과목 코드와 일치하지 않습니다.\n");
 				continue;
 			}
 			break;
 		}
 		int score = 0;
-		while(true) {
+		while (true) {
 			System.out.print("새 점수 입력 (0~100): ");
 			score = sc.nextInt();
-			
-			if(score < 0 || score > 100) {
+
+			if (score < 0 || score > 100) {
 				System.out.println("점수는 0~100 사이 점수만 입력해주세요. ");
 				continue;
 			}
 			break;
 		}
-		
+
 		int result = gradeService.updateStudentGrade(stdNo, changeSubCode, score);
-		
-		if(result > 0) {
+
+		if (result > 0) {
 			System.out.println("성적이 수정되었습니다.");
-			
+
 		} else {
 			System.out.println("성적 수정 실패.");
 		}
@@ -237,34 +237,21 @@ public class GradeView {
 			return;
 		}
 		System.out.println("──────────────────────────────────────────────");
-		System.out.printf("학번 : %s | 이름 : %s | 전공 : %s\n", studentInfo.getStdNo(), studentInfo.getStdName(), studentInfo.getMajor());
+		System.out.printf("학번 : %s | 이름 : %s | 전공 : %s\n", studentInfo.getStdNo(), studentInfo.getStdName(),
+				studentInfo.getMajor());
 		System.out.println("──────────────────────────────────────────────");
-		
+
 		System.out.println("과목명      │   점수    |   학점");
 		System.out.println("──────────────────────────────────────────────");
 		double totalGpa = 0;
 		double avgGpa = 0;
 		for (Student student : studentGradeList) {
 			System.out.printf("%-10s %-10d %s\n", student.getSubjectName(), student.getScore(), student.getGrade());
-			totalGpa +=  student.getGpa();
+			totalGpa += student.getGpa();
 		}
 		avgGpa = totalGpa / studentGradeList.size();
-		
+
 		System.out.println("──────────────────────────────────────────────");
 		System.out.printf("평균 평점 : %.2f\n", avgGpa);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

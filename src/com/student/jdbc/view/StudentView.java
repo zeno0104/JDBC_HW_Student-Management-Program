@@ -5,68 +5,13 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.student.jdbc.model.dto.Student;
-import com.student.jdbc.model.service.GradeService;
 import com.student.jdbc.model.service.StudentService;
-import com.student.jdbc.model.service.SubjectService;
 
 public class StudentView {
 	private Scanner sc = new Scanner(System.in);
 	private StudentService studentService = new StudentService();
-	private SubjectService subjectService = new SubjectService();
-	private GradeView gradeView = new GradeView();
-	private GradeService gradeService = new GradeService();
 	
-	public void displayMenu() {
-		System.out.println("====KH대학교 학생관리 프로그램에 오신것을 환영합니다!====");
-		int input = 0;
-		try {
-			do {
-				System.out.println("1. 학생 등록");
-				System.out.println("2. 전체 학생 조회");
-				System.out.println("3. 학생 정보 수정");
-				System.out.println("4. 학생 삭제");
-				System.out.println("5. 전공별 학생 조회");
-				System.out.println("6. 재학 상태 관리");
-				System.out.println("7. 성적 관리");
-				System.out.println("0. 프로그램 종료");
-
-				System.out.print("메뉴를 선택해주세요 : ");
-				input = sc.nextInt();
-
-				switch (input) {
-				case 1: /* registerStudent() */
-					registerStudent();
-					break;
-				case 2: /* getAllStudents() */
-					getAllStudents();
-					break;
-				case 3: /* updateStudentInfo() */
-					updateStudentInfo();
-					break;
-				case 4: /* deleteStudentById() */
-					deleteStudentById();
-					break;
-				case 5: /* getStudentsByMajor() */
-					getStudentsByMajor();
-					break;
-				case 6: /* manageEnrollmentStatus() */
-					manageEnrollmentStatus();
-					break;
-				case 7: /* manageStudentGrades() */
-					gradeView.manageStudentGrades();
-					break;
-				case 0:
-					System.out.println("프로그램을 종료합니다...");
-					break;
-				default:
-					System.out.println("1~5 사이의 정수만 입력해주세요!!");
-				}
-				input = -1;
-			} while (input != 0);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
 
 	/**
 	 * Sub method 학생 유무 확인 => 3번, 4번에서 쓰임.
@@ -97,7 +42,8 @@ public class StudentView {
 	public void registerStudent() throws Exception {
 		System.out.println("\n===1. 학생 등록===\n");
 
-		System.out.print("학번 : ");
+		System.out.print("학번 (예: 20250302) : ");
+		
 		String stdNo = sc.next();
 
 		Student studentInfo = checkStd(stdNo);
@@ -113,7 +59,7 @@ public class StudentView {
 		System.out.print("나이 : ");
 		int age = sc.nextInt();
 
-		System.out.print("전공명 : ");
+		System.out.print("전공 코드 : ");
 		String major = sc.next();
 
 		System.out.print("입학 날짜 (EX) 2025-10-30): ");
@@ -132,7 +78,7 @@ public class StudentView {
 		int result = studentService.registerStudent(student);
 
 		if (result > 0) {
-			System.out.println("학생을 등록하였습니다.");
+			System.out.println("학생을 등록하였습니다.\n");
 		} else {
 			System.out.println("학생 등록 실패.");
 		}
@@ -151,13 +97,13 @@ public class StudentView {
 			return;
 		}
 		System.out.println("\n<<< 학생 리스트 >>>\n");
-		System.out.println("학번        │ 이름      │ 나이 │ 전공            │ 입학일           │ 상태");
-		System.out.println("──────────────────────────────────────────────────────────────────────────────");
+		System.out.println("      학번      │      이름      │      나이      │      전공      │      입학일      │      상태");
+		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────");
 
 		for (Student std : studentList) {
 			System.out.println(std.toString());
 		}
-		System.out.println("──────────────────────────────────────────────────────────────────────────────");
+		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────");
 	}
 
 	/**
@@ -254,7 +200,7 @@ public class StudentView {
 		int result = studentService.deleteStudentById(stdInfo.getStdNo());
 
 		if (result > 0) {
-			System.out.println(stdInfo.getStdName() + "님이 삭제되었습니다.");
+			System.out.println(stdInfo.getStdName() + "님이 삭제되었습니다.\n");
 		} else {
 			System.out.println("삭제 실패.");
 		}
@@ -273,18 +219,18 @@ public class StudentView {
 		stdList = studentService.getStudentsByMajor(major);
 
 		if (stdList.isEmpty()) {
-			System.out.println("학생이 존재하지 않습니다.");
+			System.out.println("학생이 존재하지 않습니다.\n");
 			return;
 		}
 		String majorName = stdList.get(0).getMajor();
 
 		System.out.println("\n<<<" + majorName + " 학생 리스트>>>\n");
-		System.out.println("학번        │ 이름      │ 나이 │ 전공            │ 입학일           │ 상태");
-		System.out.println("──────────────────────────────────────────────────────────────────────────────");
+		System.out.println("      학번      │      이름      │      나이      │      전공      │      입학일      │      상태");
+		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────");
 		for (Student student : stdList) {
 			System.out.println(student.toString());
 		}
-		System.out.println("──────────────────────────────────────────────────────────────────────────────");
+		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────");
 
 	}
 
@@ -329,13 +275,13 @@ public class StudentView {
 				}
 				if (result > 0) {
 					if (input == 1) {
-						System.out.println(studentInfo.getStdName() + " 학생의 상태가 '재학'으로 변경되었습니다.");
+						System.out.println(studentInfo.getStdName() + " 학생의 상태가 '재학'으로 변경되었습니다.\n");
 					} else if (input == 2) {
-						System.out.println(studentInfo.getStdName() + " 학생의 상태가 '휴학'으로 변경되었습니다.");
+						System.out.println(studentInfo.getStdName() + " 학생의 상태가 '휴학'으로 변경되었습니다.\n");
 					} else if (input == 3) {
-						System.out.println(studentInfo.getStdName() + " 학생의 상태가 '졸업'으로 변경되었습니다.");
+						System.out.println(studentInfo.getStdName() + " 학생의 상태가 '졸업'으로 변경되었습니다.\n");
 					} else {
-						System.out.println(studentInfo.getStdName() + " 학생의 상태가 '제적'으로 변경되었습니다.");
+						System.out.println(studentInfo.getStdName() + " 학생의 상태가 '제적'으로 변경되었습니다.\n");
 					}
 				} else {
 					System.out.println("재학 상태 수정 실패\n");

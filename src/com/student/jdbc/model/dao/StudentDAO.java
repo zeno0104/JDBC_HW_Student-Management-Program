@@ -11,7 +11,6 @@ import static com.student.jdbc.common.JDBCTemplate.*;
 import com.student.jdbc.model.dto.Student;
 
 public class StudentDAO {
-	private Statement stmt = null;
 	private PreparedStatement pstmt = null;
 	private ResultSet rs = null;
 
