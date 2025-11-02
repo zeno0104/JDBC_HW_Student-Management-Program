@@ -62,9 +62,9 @@ public class StudentDAO {
 		Student student = null;
 		try {
 			String sql = """
-					SELECT STD_NO, STD_NAME, STD_AGE, MAJOR, TO_CHAR(ENT_DATE, 'YYYY-MM-DD') "ENT_DATE", STATUS
+					SELECT STD_NO, STD_NAME, STD_AGE, MAJOR_CODE, TO_CHAR(ENT_DATE, 'YYYY-MM-DD') "ENT_DATE", STATUS
 					FROM KH_STUDENT
-					ORDER BY MAJOR, STD_NO, STD_NAME
+					ORDER BY MAJOR_CODE, STD_NO, STD_NAME
 					""";
 
 			pstmt = conn.prepareStatement(sql);
@@ -75,7 +75,7 @@ public class StudentDAO {
 				String stdNo = rs.getString("STD_NO");
 				String stdName = rs.getString("STD_NAME");
 				int stdAge = rs.getInt("STD_AGE");
-				String stdMajor = rs.getString("MAJOR");
+				String stdMajor = rs.getString("MAJOR_CODE");
 				String stdEntDate = rs.getString("ENT_DATE");
 				String status = rs.getString("STATUS");
 				
@@ -110,7 +110,7 @@ public class StudentDAO {
 
 		try {
 			String sql = """
-					SELECT STD_NO, STD_AGE, STD_NAME, MAJOR, STATUS
+					SELECT STD_NO, STD_AGE, STD_NAME, MAJOR_CODE, STATUS
 					FROM KH_STUDENT
 					WHERE STD_NO = ?
 					""";
@@ -125,7 +125,7 @@ public class StudentDAO {
 				String stdNoInfo = rs.getString("STD_NO");
 				int stdAge = rs.getInt("STD_AGE");
 				String stdName = rs.getString("STD_NAME");
-				String major = rs.getString("MAJOR");
+				String major = rs.getString("MAJOR_CODE");
 				String status = rs.getString("STATUS");
 
 				stdInfo = new Student();
@@ -216,7 +216,7 @@ public class StudentDAO {
 		try {
 			String sql = """
 					UPDATE KH_STUDENT
-					SET MAJOR = ?
+					SET MAJOR_CODE = ?
 					WHERE STD_NO = ?
 					""";
 			pstmt = conn.prepareStatement(sql);
@@ -271,9 +271,9 @@ public class StudentDAO {
 		List<Student> stdList = new ArrayList<>();
 		try {
 			String sql = """
-					SELECT STD_NO, STD_NAME, STD_AGE, MAJOR, TO_CHAR(ENT_DATE, 'YYYY-MM-DD') "ENT_DATE", STATUS
+					SELECT STD_NO, STD_NAME, STD_AGE, MAJOR_CODE, TO_CHAR(ENT_DATE, 'YYYY-MM-DD') "ENT_DATE", STATUS
 					FROM KH_STUDENT
-					WHERE MAJOR = ?
+					WHERE MAJOR_CODE = ?
 					""";
 			pstmt = conn.prepareStatement(sql);
 
@@ -285,7 +285,7 @@ public class StudentDAO {
 				String stdNo = rs.getString("STD_NO");
 				String stdName = rs.getString("STD_NAME");
 				int stdAge = rs.getInt("STD_AGE");
-				String majorInfo = rs.getString("MAJOR");
+				String majorInfo = rs.getString("MAJOR_CODE");
 				String entDate = rs.getString("ENT_DATE");
 				String status = rs.getString("STATUS");
 

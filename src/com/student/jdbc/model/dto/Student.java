@@ -24,7 +24,7 @@ public class Student {
 	
 	@Override
 	public String toString() {
-	    return String.format("%12s %12s %14d %15s %16s %12s",
+	    return String.format("%10s %12s %14d %16s %18s %12s",
 	            stdNo, stdName, stdAge, major, entDate, status);
 	}
 }

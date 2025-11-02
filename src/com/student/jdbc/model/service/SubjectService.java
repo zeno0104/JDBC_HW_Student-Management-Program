@@ -116,6 +116,7 @@ public class SubjectService {
 			rollback(conn);
 		}
 		close(conn);
+		
 		return result;
 	}
 

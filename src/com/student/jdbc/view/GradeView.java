@@ -31,6 +31,73 @@ public class GradeView {
 		return stdInfo;
 	}
 
+	/** 성적 등록
+	 * @return
+	 */
+	public void addGrade(Student studentInfo) throws Exception {
+		String stdNo = "";
+		int result = 0;
+		while (true) {
+			System.out.print("\n학번 입력 : ");
+			stdNo = sc.next();
+
+			studentInfo = checkStd(stdNo);
+
+			if (studentInfo == null) {
+				System.out.println("\n존재하지 않는 학생입니다.\n");
+				continue;
+			}
+			break;
+		}
+
+		List<Subject> subjectList = subjectService.getSubjectList(studentInfo.getMajor());
+		if (subjectList.size() == 0) {
+			System.out.println("해당 학과에 등록된 과목이 없습니다.");
+			return;
+		}
+
+		System.out.println("\n=== " + studentInfo.getMajor() + " 개설 과목 목록 ===");
+		System.out.printf("%-10s │ %-15s │ %-8s │ %-4s │ %-8s │ %-3s%n", "코드", "과목명", "교수명", "학점", "개설년도", "학기");
+		System.out.println("──────────────────────────────────────────────────────────────");
+
+		for (Subject subject : subjectList) {
+			System.out.println(subject.toString());
+		}
+		String subCode = "";
+
+		while (true) {
+			System.out.print("과목 코드 입력 : ");
+			subCode = sc.next().toUpperCase();
+
+			Subject subjectInfo = subjectService.checkSubject(subCode);
+
+			if (subjectInfo == null) {
+				System.out.print("등록되지 않은 과목입니다.\n");
+				continue;
+			}
+			break;
+		}
+
+		int score = 0;
+
+		while (true) {
+			System.out.print("점수 입력 (0~100): ");
+			score = sc.nextInt();
+			if (score < 0 || score > 100) {
+				System.out.println("점수는 0~100 사이의 수를 입력해주세요.");
+				continue;
+			}
+			break;
+		}
+
+		result = gradeService.manageStudentGrades(stdNo, subCode, score);
+		if (result > 0) {
+			System.out.println("성적이 등록되었습니다.");
+		} else {
+			System.out.println("성적 등록 실패.");
+		}
+	}
+
 	/**
 	 * 7.1 성적 등록 -> 중복으로 넣었을 때는 안되!
 	 */
@@ -50,69 +117,7 @@ public class GradeView {
 
 			switch (input) {
 			case 1: // 1. 성적 등록
-				String stdNo = "";
-
-				while (true) {
-					System.out.print("\n학번 입력 : ");
-					stdNo = sc.next();
-
-					studentInfo = checkStd(stdNo);
-
-					if (studentInfo == null) {
-						System.out.println("\n존재하지 않는 학생입니다.\n");
-						continue;
-					}
-					break;
-				}
-
-				List<Subject> subjectList = subjectService.getSubjectList(studentInfo.getMajor());
-				if (subjectList.size() == 0) {
-					System.out.println("해당 학과에 등록된 과목이 없습니다.");
-					return;
-				}
-
-				System.out.println("\n=== " + studentInfo.getMajor() + " 개설 과목 목록 ===");
-				System.out.printf("%-10s │ %-15s │ %-8s │ %-4s │ %-8s │ %-3s%n", "코드", "과목명", "교수명", "학점", "개설년도",
-						"학기");
-				System.out.println("──────────────────────────────────────────────────────────────");
-
-				for (Subject subject : subjectList) {
-					System.out.println(subject.toString());
-				}
-				String subCode = "";
-
-				while (true) {
-					System.out.print("과목 코드 입력 : ");
-					subCode = sc.next();
-
-					Subject subjectInfo = subjectService.checkSubject(subCode);
-
-					if (subjectInfo == null) {
-						System.out.print("등록되지 않은 과목입니다.\n");
-						continue;
-					}
-					break;
-				}
-
-				int score = 0;
-
-				while (true) {
-					System.out.print("점수 입력 (0~100): ");
-					score = sc.nextInt();
-					if (score < 0 || score > 100) {
-						System.out.println("점수는 0~100 사이의 수를 입력해주세요.");
-						continue;
-					}
-					break;
-				}
-
-				result = gradeService.manageStudentGrades(stdNo, subCode, score);
-				if (result > 0) {
-					System.out.println("성적이 등록되었습니다.");
-				} else {
-					System.out.println("성적 등록 실패.");
-				}
-
+				addGrade(studentInfo);
 				break;
 			case 2: // 2. 성적 수정
 				updateStudentGrade();
@@ -175,7 +180,7 @@ public class GradeView {
 
 		while (true) {
 			System.out.print("수정할 과목 코드 입력 : ");
-			changeSubCode = sc.next();
+			changeSubCode = sc.next().toUpperCase();
 			for (Student grade : studentGradeList) {
 				if (grade.getSubjectCode().equals(changeSubCode)) {
 					flag = true;

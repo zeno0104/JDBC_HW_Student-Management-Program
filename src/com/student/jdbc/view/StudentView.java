@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.student.jdbc.model.dto.Student;
+import com.student.jdbc.model.service.MajorService;
 import com.student.jdbc.model.service.StudentService;
 
 public class StudentView {
 	private Scanner sc = new Scanner(System.in);
 	private StudentService studentService = new StudentService();
-	
+	private MajorService majorService = new MajorService();
 	
 
 	/**
@@ -60,7 +61,14 @@ public class StudentView {
 		int age = sc.nextInt();
 
 		System.out.print("전공 코드 : ");
-		String major = sc.next();
+		String major = sc.next().toUpperCase();
+		
+		int result = majorService.getMajorCode(major);
+		
+		if(result == 0) {
+			System.out.println("존재하지 않는 학과입니다.\n");
+			return;
+		}
 
 		System.out.print("입학 날짜 (EX) 2025-10-30): ");
 		String entDate = sc.next();
@@ -75,7 +83,7 @@ public class StudentView {
 
 		// 조회
 
-		int result = studentService.registerStudent(student);
+		result = studentService.registerStudent(student);
 
 		if (result > 0) {
 			System.out.println("학생을 등록하였습니다.\n");
@@ -162,9 +170,16 @@ public class StudentView {
 				break;
 			case 3: // 3. 전공 수정
 				System.out.print("수정할 전공 입력 : ");
-				String newMajor = sc.next();
+				String newMajor = sc.next().toUpperCase();
 
+				result = majorService.getMajorCode(newMajor);
+				if(result == 0) {
+					System.out.println("존재하지 않는 전공입니다.");
+					return;
+				}
+				
 				result = studentService.updateStdMajor(stdInfo.getStdNo(), newMajor);
+				
 				if (result > 0) {
 					System.out.println(stdInfo.getMajor() + " -> " + newMajor + "로 변경 완료!\n");
 				} else {
@@ -197,6 +212,14 @@ public class StudentView {
 			return;
 		}
 
+		System.out.print(stdInfo.getStdName() + "님을 정말 삭제하시겠습니까? (Y/N) ");
+		String yesOrNo = sc.next();
+		
+		if(yesOrNo.equalsIgnoreCase("N")) {
+			System.out.println("삭제를 취소합니다.");
+			return;
+		}
+		
 		int result = studentService.deleteStudentById(stdInfo.getStdNo());
 
 		if (result > 0) {
@@ -214,8 +237,9 @@ public class StudentView {
 		List<Student> stdList = new ArrayList<Student>();
 		System.out.println("\n===5. 전공별 학생 조회===\n");
 
-		System.out.print("조회할 학과(학부) 입력 : ");
-		String major = sc.next();
+		System.out.print("조회할 학과(학부) 코드 : ");
+		String major = sc.next().toUpperCase();
+		
 		stdList = studentService.getStudentsByMajor(major);
 
 		if (stdList.isEmpty()) {

@@ -25,7 +25,7 @@ public class SubjectDAO {
 
 		try {
 			String sql = """
-					SELECT SUBJECT_CODE, SUBJECT_NAME, MAJOR,
+					SELECT SUBJECT_CODE, SUBJECT_NAME, MAJOR_CODE,
 					PROFESSOR, CREDIT, OPEN_YEAR, SEMESTER
 					FROM KH_SUBJECT
 					WHERE SUBJECT_CODE = ?
@@ -39,7 +39,7 @@ public class SubjectDAO {
 			if (rs.next()) {
 				String subjectCode = rs.getString("SUBJECT_CODE");
 				String subjectName = rs.getString("SUBJECT_NAME");
-				String major = rs.getString("MAJOR");
+				String major = rs.getString("MAJOR_CODE");
 				String professor = rs.getString("PROFESSOR");
 				int credit = rs.getInt("CREDIT");
 				int openYear = rs.getInt("OPEN_YEAR");
@@ -69,9 +69,9 @@ public class SubjectDAO {
 
 		try {
 			String sql = """
-					SELECT SUBJECT_CODE, SUBJECT_NAME, MAJOR, PROFESSOR, CREDIT, OPEN_YEAR, SEMESTER
+					SELECT SUBJECT_CODE, SUBJECT_NAME, MAJOR_CODE, PROFESSOR, CREDIT, OPEN_YEAR, SEMESTER
 					FROM KH_SUBJECT
-					WHERE MAJOR = ?
+					WHERE MAJOR_CODE = ?
 					""";
 			pstmt = conn.prepareStatement(sql);
 
@@ -82,7 +82,7 @@ public class SubjectDAO {
 			while (rs.next()) {
 				String subjectCode = rs.getString("SUBJECT_CODE");
 				String subjectName = rs.getString("SUBJECT_NAME");
-				String majorName = rs.getString("MAJOR");
+				String majorName = rs.getString("MAJOR_CODE");
 				String professor = rs.getString("PROFESSOR");
 				int credit = rs.getInt("CREDIT");
 				int openYear = rs.getInt("OPEN_YEAR");
@@ -147,7 +147,7 @@ public class SubjectDAO {
 
 		try {
 			String sql = """
-					SELECT SUBJECT_CODE, SUBJECT_NAME
+					SELECT SUBJECT_CODE, SUBJECT_NAME, PROFESSOR, OPEN_YEAR, SEMESTER
 					FROM KH_SUBJECT
 					WHERE SUBJECT_CODE = ?
 					""";
@@ -160,10 +160,18 @@ public class SubjectDAO {
 			if (rs.next()) {
 				String subjectCode = rs.getString("SUBJECT_CODE");
 				String subjectName = rs.getString("SUBJECT_NAME");
+				String professor = rs.getString("PROFESSOR");
+				int openYear = rs.getInt("OPEN_YEAR");
+				int semester = rs.getInt("SEMESTER");
+				
+				
 				subject = new Subject();
 
 				subject.setSubjectCode(subjectCode);
 				subject.setSubjectName(subjectName);
+				subject.setProfessor(professor);
+				subject.setOpenYear(openYear);
+				subject.setSemester(semester);
 			}
 
 		} finally {

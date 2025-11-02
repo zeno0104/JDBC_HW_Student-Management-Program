@@ -37,7 +37,7 @@ public class SubjectView {
 				deleteSubject();
 				break;
 			case 0:
-				System.out.println("과목관리를 종료합니다.");
+				System.out.println("과목관리를 종료합니다.\n");
 				break;
 			default:
 				System.out.println("0~4 사이의 정수를 입력해주세요.");
@@ -54,20 +54,21 @@ public class SubjectView {
 		int result = 0;
 
 		System.out.print("과목 코드 : ");
-		String subCode = sc.next();
+		String subCode = sc.next().toUpperCase();
 
+		sc.nextLine();
 		Subject subjectInfo = subjectService.checkSubject(subCode);
 
 		if (subjectInfo != null) {
-			System.out.println("이미 등록되어있는 과목입니다. ");
+			System.out.println("이미 등록되어있는 과목입니다.\n");
 			return;
 		}
 
 		System.out.print("과목명 : ");
-		String subName = sc.next();
+		String subName = sc.nextLine();
 
-		System.out.print("개설 학과 : ");
-		String major = sc.next();
+		System.out.print("개설 학과 코드 : ");
+		String major = sc.next().toUpperCase();
 
 		System.out.print("담당 교수 : ");
 		String professorName = sc.next();
@@ -106,9 +107,9 @@ public class SubjectView {
 		result = subjectService.addSubject(subject);
 
 		if (result > 0) {
-			System.out.println("과목이 정상적으로 등록되었습니다.");
+			System.out.println("과목이 정상적으로 등록되었습니다.\n");
 		} else {
-			System.out.println("과목 등록 실패.");
+			System.out.println("과목 등록 실패.\n");
 		}
 
 	}
@@ -119,19 +120,18 @@ public class SubjectView {
 	public void getSubjectsByMajor() throws Exception {
 		System.out.println("\n===전공별 과목 조회===\n");
 
-		System.out.print("조회할 학과 입력 : ");
-		String major = sc.next();
+		System.out.print("조회할 학과 코드 입력 : ");
+		String major = sc.next().toUpperCase();
 
 		List<Subject> subject = subjectService.getSubjectList(major);
 
 		System.out.println("─────────────────────────────────────────────────────────────────────────────────");
-		System.out.println("코드     |     과목명     |     교수명     |     학점     |     년도     |     학기");
+		System.out.println("코드     |     학기     |     교수명     |     학점     |     년도     |     과목명");
 		System.out.println("─────────────────────────────────────────────────────────────────────────────────");
 
 		for (Subject sub : subject) {
-			System.out.printf("%-5s   %-10s   %-10s   %-10s    %-10d   %-10d   %-10d\n", sub.getSubjectCode(),
-					sub.getSubjectName(), sub.getMajor(), sub.getProfessor(), sub.getCredit(), sub.getOpenYear(),
-					sub.getSemester());
+			System.out.printf("%-12s   %-10d   %-12s   %-8d    %-10d   %s \n", sub.getSubjectCode(),
+					sub.getSemester(), sub.getProfessor(), sub.getCredit(), sub.getOpenYear(), sub.getSubjectName());
 		}
 
 	}
@@ -171,7 +171,7 @@ public class SubjectView {
 				updateSemester();
 				break;
 			case 0:
-				System.out.println("과목 수정을 종료합니다.");
+				System.out.println("과목 수정을 종료합니다.\n");
 				break;
 			default:
 				System.out.println("0~5 사이의 정수를 입력하세요.");
@@ -186,11 +186,11 @@ public class SubjectView {
 	public void updateSubjectName() throws Exception {
 		System.out.println("\n===1. 과목명 수정===\n");
 		System.out.print("수정할 과목 코드 입력 : ");
-		String subCode = sc.next();
+		String subCode = sc.next().toUpperCase();
 
 		Subject subject = subjectService.getSubject(subCode);
 		if (subject == null) {
-			System.out.println("등록된 과목이 없습니다.");
+			System.out.println("등록된 과목이 없습니다.\n");
 			return;
 		}
 
@@ -201,9 +201,9 @@ public class SubjectView {
 		int result = subjectService.updateSubjectName(newSubName, subject.getSubjectName());
 
 		if (result > 0) {
-			System.out.println("과목명이 변경되었습니다.");
+			System.out.println("과목명이 변경되었습니다.\n");
 		} else {
-			System.out.println("과목명 변경 실패.");
+			System.out.println("과목명 변경 실패.\n");
 		}
 	}
 
@@ -213,11 +213,11 @@ public class SubjectView {
 	public void updateProfessor() throws Exception {
 		System.out.println("\n===2. 담당 교수 수정===\n");
 		System.out.print("수정할 과목 코드 입력 : ");
-		String subCode = sc.next();
+		String subCode = sc.next().toUpperCase();
 
 		Subject subject = subjectService.getSubject(subCode);
 		if (subject == null) {
-			System.out.println("등록된 과목이 없습니다.");
+			System.out.println("등록된 과목이 없습니다.\n");
 			return;
 		}
 
@@ -225,12 +225,12 @@ public class SubjectView {
 		System.out.print("새로운 담당 교수명 입력 : ");
 		String professorName = sc.next();
 
-		int result = subjectService.updateSubjectName(professorName, subject.getSubjectCode());
+		int result = subjectService.updateProfessor(professorName, subject.getSubjectCode());
 
 		if (result > 0) {
-			System.out.println("담당 교수명이 변경되었습니다.");
+			System.out.println("담당 교수명이 변경되었습니다.\n");
 		} else {
-			System.out.println("담당 교수명 변경 실패.");
+			System.out.println("담당 교수명 변경 실패.\n");
 		}
 	}
 
@@ -240,11 +240,11 @@ public class SubjectView {
 	public void updateCredit() throws Exception {
 		System.out.println("\n===3. 학점 수정===\n");
 		System.out.print("수정할 과목 코드 입력 : ");
-		String subCode = sc.next();
+		String subCode = sc.next().toUpperCase();
 
 		Subject subject = subjectService.getSubject(subCode);
 		if (subject == null) {
-			System.out.println("등록된 과목이 없습니다.");
+			System.out.println("등록된 과목이 없습니다.\n");
 			return;
 		}
 
@@ -255,9 +255,9 @@ public class SubjectView {
 		int result = subjectService.updateCredit(newCredit, subject.getSubjectCode());
 
 		if (result > 0) {
-			System.out.println("학점이 변경되었습니다.");
+			System.out.println("학점이 변경되었습니다.\n");
 		} else {
-			System.out.println("학점 변경 실패.");
+			System.out.println("학점 변경 실패.\n");
 		}
 	}
 
@@ -267,11 +267,11 @@ public class SubjectView {
 	public void updateOpenYear() throws Exception {
 		System.out.println("\n===4. 개설년도 수정===\n");
 		System.out.print("수정할 과목 코드 입력 : ");
-		String subCode = sc.next();
+		String subCode = sc.next().toUpperCase();
 
 		Subject subject = subjectService.getSubject(subCode);
 		if (subject == null) {
-			System.out.println("등록된 과목이 없습니다.");
+			System.out.println("등록된 과목이 없습니다.\n");
 			return;
 		}
 
@@ -282,9 +282,9 @@ public class SubjectView {
 		int result = subjectService.updateOpenYear(newYear, subject.getSubjectCode());
 
 		if (result > 0) {
-			System.out.println("개설년도가 변경되었습니다.");
+			System.out.println("개설년도가 변경되었습니다.\n");
 		} else {
-			System.out.println("개설년도 변경 실패.");
+			System.out.println("개설년도 변경 실패.\n");
 		}
 	}
 
@@ -295,11 +295,11 @@ public class SubjectView {
 		System.out.println("\n===5. 학기 수정===\n");
 		
 		System.out.print("수정할 과목 코드 입력 : ");
-		String subCode = sc.next();
+		String subCode = sc.next().toUpperCase();
 
 		Subject subject = subjectService.getSubject(subCode);
 		if (subject == null) {
-			System.out.println("등록된 과목이 없습니다.");
+			System.out.println("등록된 과목이 없습니다.\n");
 			return;
 		}
 
@@ -310,9 +310,9 @@ public class SubjectView {
 		int result = subjectService.updateSemester(newSemester, subject.getSubjectCode());
 
 		if (result > 0) {
-			System.out.println("학기가 변경되었습니다.");
+			System.out.println("학기가 변경되었습니다.\n");
 		} else {
-			System.out.println("학기 변경 실패.");
+			System.out.println("학기 변경 실패.\n");
 		}
 	}
 
@@ -322,26 +322,14 @@ public class SubjectView {
 	public void deleteSubject() throws Exception {
 		System.out.println("\n===과목 삭제===\n");
 		int result = 0;
-//		System.out.print("삭제할 과목의 학과 입력 : ");
-//		String major = sc.next();
-//		
-//		List<Subject> subjectInfo = subjectService.getSubjectList(major);
-//		
-//		System.out.println("─────────────────────────────────────────────────────────────────────────────────");
-//		System.out.println("코드     |     과목명     |     교수명     |     학점     |     년도     |     학기");
-//		System.out.println("─────────────────────────────────────────────────────────────────────────────────");
-//
-//		for(Subject sub : subjectInfo) {
-//			System.out.printf("%-5s   %-10s   %-10s   %-10s    %-10d   %-10d   %-10d\n", sub.getSubjectCode(), sub.getSubjectName(), sub.getMajor(), sub.getProfessor(), sub.getCredit(), sub.getOpenYear(), sub.getSemester());
-//		}
 
 		System.out.print("\n삭제할 과목 코드 입력 : ");
-		String subCode = sc.next();
+		String subCode = sc.next().toUpperCase();
 
 		Subject subject = subjectService.getSubject(subCode);
 
 		if (subject == null) {
-			System.out.println(subCode + " 과목이 존재하지 않습니다");
+			System.out.println(subCode + " 과목이 존재하지 않습니다.\n");
 			return;
 		}
 
@@ -349,15 +337,15 @@ public class SubjectView {
 		String yesOrNo = sc.next();
 
 		if (yesOrNo.equalsIgnoreCase("N")) {
-			System.out.println("삭제를 취소했습니다.");
+			System.out.println("삭제를 취소했습니다.\n");
 			return;
 		}
 		result = subjectService.deleteSubject(subCode);
 
 		if (result > 0) {
-			System.out.println("과목이 성공적으로 삭제되었습니다.");
+			System.out.println("과목이 성공적으로 삭제되었습니다.\n");
 		} else {
-			System.out.println("과목 삭제 실패");
+			System.out.println("과목 삭제 실패\n");
 		}
 	}
 }
