@@ -105,10 +105,10 @@ public class SubjectService {
 	 * @param subjectName
 	 * @return
 	 */
-	public int updateProfessor(String newProfessorName, String subCode) throws Exception {
+	public int updateProfessor(String professorCode, String subCode) throws Exception {
 		Connection conn = getConnection();
 
-		int result = dao.updateProfessor(conn, newProfessorName, subCode);
+		int result = dao.updateProfessor(conn, professorCode, subCode);
 
 		if (result > 0) {
 			commit(conn);

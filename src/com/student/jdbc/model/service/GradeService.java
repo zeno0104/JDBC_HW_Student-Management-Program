@@ -33,21 +33,21 @@ public class GradeService {
 
 		return result;
 	}
-
+	 
 	/**
 	 * 7.2 성적 수정
 	 */
 	public int updateStudentGrade(String stdNo, String changeSubCode, int score) throws Exception {
 		Connection conn = getConnection();
-		
+
 		int result = dao.updateStudentGrade(conn, stdNo, changeSubCode, score);
-		
-		if(result > 0) {
+
+		if (result > 0) {
 			commit(conn);
 		} else {
 			rollback(conn);
 		}
-		
+
 		return result;
 	}
 
@@ -61,6 +61,5 @@ public class GradeService {
 
 		return studentList;
 	}
-
 
 }

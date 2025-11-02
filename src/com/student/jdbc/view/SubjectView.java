@@ -70,8 +70,9 @@ public class SubjectView {
 		System.out.print("개설 학과 코드 : ");
 		String major = sc.next().toUpperCase();
 
-		System.out.print("담당 교수 : ");
-		String professorName = sc.next();
+		System.out.print("담당 교수 ID (예: PR101): ");
+		String profCode = sc.next();
+
 
 		System.out.print("학점(1~3) : ");
 		int gpa = 0;
@@ -102,7 +103,7 @@ public class SubjectView {
 			break;
 		}
 
-		Subject subject = new Subject(subCode, subName, major, professorName, gpa, year, semester);
+		Subject subject = new Subject(subCode, subName, major, profCode, gpa, year, semester);
 
 		result = subjectService.addSubject(subject);
 
@@ -125,13 +126,17 @@ public class SubjectView {
 
 		List<Subject> subject = subjectService.getSubjectList(major);
 
-		System.out.println("─────────────────────────────────────────────────────────────────────────────────");
-		System.out.println("코드     |     학기     |     교수명     |     학점     |     년도     |     과목명");
-		System.out.println("─────────────────────────────────────────────────────────────────────────────────");
+		if(subject.size() == 0) {
+			System.out.println("존재하지 않습니다.");
+			return;
+		}
+		System.out.println("───────────────────────────────────────────────────────────────────────────────────────");
+		System.out.println("코드     |     학기     |     교수코드     |     학점     |     년도     |     과목명");
+		System.out.println("───────────────────────────────────────────────────────────────────────────────────────");
 
 		for (Subject sub : subject) {
-			System.out.printf("%-12s   %-10d   %-12s   %-8d    %-10d   %s \n", sub.getSubjectCode(),
-					sub.getSemester(), sub.getProfessor(), sub.getCredit(), sub.getOpenYear(), sub.getSubjectName());
+			System.out.printf("%-12s   %-12d   %-16s   %-10d    %-10d   %s \n", sub.getSubjectCode(), sub.getSemester(),
+					sub.getProfessor(), sub.getCredit(), sub.getOpenYear(), sub.getSubjectName());
 		}
 
 	}
@@ -221,11 +226,11 @@ public class SubjectView {
 			return;
 		}
 
-		System.out.println("현재 담당 교수 : " + subject.getProfessor());
-		System.out.print("새로운 담당 교수명 입력 : ");
-		String professorName = sc.next();
+		System.out.println("현재 담당 교수 : " + subject.getProfName() + "(" + subject.getProfessor() + ")");
+		System.out.print("새로운 담당 교수 코드 입력 : ");
+		String professorCode = sc.next().toUpperCase();
 
-		int result = subjectService.updateProfessor(professorName, subject.getSubjectCode());
+		int result = subjectService.updateProfessor(professorCode, subject.getSubjectCode());
 
 		if (result > 0) {
 			System.out.println("담당 교수명이 변경되었습니다.\n");
@@ -250,7 +255,7 @@ public class SubjectView {
 
 		System.out.println("현재 학점 : " + subject.getCredit());
 		System.out.print("변경할 학점 입력 (1~3 사이 정수) : ");
-		int newCredit= sc.nextInt();
+		int newCredit = sc.nextInt();
 
 		int result = subjectService.updateCredit(newCredit, subject.getSubjectCode());
 
@@ -293,7 +298,7 @@ public class SubjectView {
 	 */
 	public void updateSemester() throws Exception {
 		System.out.println("\n===5. 학기 수정===\n");
-		
+
 		System.out.print("수정할 과목 코드 입력 : ");
 		String subCode = sc.next().toUpperCase();
 

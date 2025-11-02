@@ -26,7 +26,7 @@ public class SubjectDAO {
 		try {
 			String sql = """
 					SELECT SUBJECT_CODE, SUBJECT_NAME, MAJOR_CODE,
-					PROFESSOR, CREDIT, OPEN_YEAR, SEMESTER
+					PROF_ID, CREDIT, OPEN_YEAR, SEMESTER
 					FROM KH_SUBJECT
 					WHERE SUBJECT_CODE = ?
 					""";
@@ -40,7 +40,7 @@ public class SubjectDAO {
 				String subjectCode = rs.getString("SUBJECT_CODE");
 				String subjectName = rs.getString("SUBJECT_NAME");
 				String major = rs.getString("MAJOR_CODE");
-				String professor = rs.getString("PROFESSOR");
+				String professor = rs.getString("PROF_ID");
 				int credit = rs.getInt("CREDIT");
 				int openYear = rs.getInt("OPEN_YEAR");
 				int semester = rs.getInt("SEMESTER");
@@ -69,7 +69,7 @@ public class SubjectDAO {
 
 		try {
 			String sql = """
-					SELECT SUBJECT_CODE, SUBJECT_NAME, MAJOR_CODE, PROFESSOR, CREDIT, OPEN_YEAR, SEMESTER
+					SELECT SUBJECT_CODE, SUBJECT_NAME, MAJOR_CODE, PROF_ID, CREDIT, OPEN_YEAR, SEMESTER
 					FROM KH_SUBJECT
 					WHERE MAJOR_CODE = ?
 					""";
@@ -83,7 +83,7 @@ public class SubjectDAO {
 				String subjectCode = rs.getString("SUBJECT_CODE");
 				String subjectName = rs.getString("SUBJECT_NAME");
 				String majorName = rs.getString("MAJOR_CODE");
-				String professor = rs.getString("PROFESSOR");
+				String professor = rs.getString("PROF_ID");
 				int credit = rs.getInt("CREDIT");
 				int openYear = rs.getInt("OPEN_YEAR");
 				int semester = rs.getInt("SEMESTER");
@@ -147,8 +147,9 @@ public class SubjectDAO {
 
 		try {
 			String sql = """
-					SELECT SUBJECT_CODE, SUBJECT_NAME, PROFESSOR, OPEN_YEAR, SEMESTER
-					FROM KH_SUBJECT
+					SELECT SUBJECT_CODE, SUBJECT_NAME, P.PROF_ID, OPEN_YEAR, SEMESTER, PROF_NAME, CREDIT
+					FROM KH_SUBJECT S
+					JOIN KH_PROFESSOR P ON S.PROF_ID = P.PROF_ID
 					WHERE SUBJECT_CODE = ?
 					""";
 			pstmt = conn.prepareStatement(sql);
@@ -160,18 +161,23 @@ public class SubjectDAO {
 			if (rs.next()) {
 				String subjectCode = rs.getString("SUBJECT_CODE");
 				String subjectName = rs.getString("SUBJECT_NAME");
-				String professor = rs.getString("PROFESSOR");
+				String profNo = rs.getString("PROF_ID");
 				int openYear = rs.getInt("OPEN_YEAR");
 				int semester = rs.getInt("SEMESTER");
+				String profName = rs.getString("PROF_NAME");
+				int credit = rs.getInt("CREDIT");
 				
 				
 				subject = new Subject();
 
 				subject.setSubjectCode(subjectCode);
 				subject.setSubjectName(subjectName);
-				subject.setProfessor(professor);
+				subject.setProfessor(profNo);
 				subject.setOpenYear(openYear);
 				subject.setSemester(semester);
+				subject.setProfessor(profNo);
+				subject.setProfName(profName);
+				subject.setCredit(credit);
 			}
 
 		} finally {
@@ -218,18 +224,18 @@ public class SubjectDAO {
 	 * @param currProcessorName
 	 * @return
 	 */
-	public int updateProfessor(Connection conn, String newProfessorName, String subCode) throws Exception {
+	public int updateProfessor(Connection conn, String professorCode, String subCode) throws Exception {
 		int result = 0;
 
 		try {
 			String sql = """
 					UPDATE KH_SUBJECT
-					SET PROFESSOR = ?
+					SET PROF_ID = ?
 					WHERE SUBJECT_CODE = ?
 					""";
 			pstmt = conn.prepareStatement(sql);
 
-			pstmt.setString(1, newProfessorName);
+			pstmt.setString(1, professorCode);
 			pstmt.setString(2, subCode);
 
 			result = pstmt.executeUpdate();

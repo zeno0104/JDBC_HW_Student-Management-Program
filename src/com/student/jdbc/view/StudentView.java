@@ -105,7 +105,7 @@ public class StudentView {
 			return;
 		}
 		System.out.println("\n<<< 학생 리스트 >>>\n");
-		System.out.println("      학번      │      이름      │      나이      │      전공      │      입학일      │      상태");
+		System.out.println("      학번      │      이름      │      나이      │      상태      │      입학일      │      전공");
 		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────");
 
 		for (Student std : studentList) {
@@ -212,7 +212,7 @@ public class StudentView {
 			return;
 		}
 
-		System.out.print(stdInfo.getStdName() + "님을 정말 삭제하시겠습니까? (Y/N) ");
+		System.out.print(stdInfo.getStdName() + "(" + stdInfo.getMajorName() + ")님을 정말 삭제하시겠습니까? (Y/N) ");
 		String yesOrNo = sc.next();
 		
 		if(yesOrNo.equalsIgnoreCase("N")) {
@@ -249,7 +249,7 @@ public class StudentView {
 		String majorName = stdList.get(0).getMajor();
 
 		System.out.println("\n<<<" + majorName + " 학생 리스트>>>\n");
-		System.out.println("      학번      │      이름      │      나이      │      전공      │      입학일      │      상태");
+		System.out.println("      학번      │      이름      │      나이      │      상태      │      입학일      │      전공");
 		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────");
 		for (Student student : stdList) {
 			System.out.println(student.toString());
@@ -273,7 +273,7 @@ public class StudentView {
 			return;
 		}
 
-		System.out.println("\n" + studentInfo.getStdName() + "(" + studentInfo.getMajor() + ") 학생의 현재 상태 : "
+		System.out.println("\n" + studentInfo.getStdName() + "(" + studentInfo.getMajorName() + ") 학생의 현재 상태 : "
 				+ studentInfo.getStatus() + "\n\n");
 
 		int input = 0;

@@ -7,7 +7,8 @@ public class MainView {
 	private StudentView studentView = new StudentView();
 	private GradeView gradeView = new GradeView();
 	private SubjectView subjectView = new SubjectView();
-
+	private ProfessorView professorView = new ProfessorView();
+	
 	public void displayMenu() {
 		System.out.println("====KH대학교 학생관리 프로그램에 오신것을 환영합니다!====");
 		int input = 0;
@@ -22,6 +23,7 @@ public class MainView {
 				System.out.println("6. 재학 상태 관리");
 				System.out.println("7. 성적 관리");
 				System.out.println("8. 과목 관리");
+				System.out.println("9. 교수 관리");
 				System.out.println("0. 프로그램 종료");
 
 				System.out.print("\n메뉴를 선택해주세요 : ");
@@ -51,6 +53,9 @@ public class MainView {
 					break;
 				case 8: /* manageSubject() */
 					subjectView.manageSubject();
+					break;
+				case 9:
+					professorView.manageProfessor();
 					break;
 				case 0:
 					System.out.println("프로그램을 종료합니다...");

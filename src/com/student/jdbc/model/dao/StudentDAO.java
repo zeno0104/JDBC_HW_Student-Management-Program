@@ -62,8 +62,9 @@ public class StudentDAO {
 		Student student = null;
 		try {
 			String sql = """
-					SELECT STD_NO, STD_NAME, STD_AGE, MAJOR_CODE, TO_CHAR(ENT_DATE, 'YYYY-MM-DD') "ENT_DATE", STATUS
-					FROM KH_STUDENT
+					SELECT STD_NO, STD_NAME, STD_AGE, S.MAJOR_CODE, TO_CHAR(ENT_DATE, 'YYYY-MM-DD') "ENT_DATE", STATUS, MAJOR_NAME
+					FROM KH_STUDENT S
+					JOIN KH_MAJOR M ON S.MAJOR_CODE = M.MAJOR_CODE
 					ORDER BY MAJOR_CODE, STD_NO, STD_NAME
 					""";
 
@@ -78,16 +79,18 @@ public class StudentDAO {
 				String stdMajor = rs.getString("MAJOR_CODE");
 				String stdEntDate = rs.getString("ENT_DATE");
 				String status = rs.getString("STATUS");
-				
+				String majorName = rs.getString("MAJOR_NAME");
+
 				student = new Student();
-				
+
 				student.setStdNo(stdNo);
 				student.setStdName(stdName);
 				student.setStdAge(stdAge);
 				student.setMajor(stdMajor);
 				student.setEntDate(stdEntDate);
 				student.setStatus(status);
-				
+				student.setMajorName(majorName);
+
 				studentList.add(student);
 			}
 		} finally {
@@ -110,8 +113,9 @@ public class StudentDAO {
 
 		try {
 			String sql = """
-					SELECT STD_NO, STD_AGE, STD_NAME, MAJOR_CODE, STATUS
-					FROM KH_STUDENT
+					SELECT STD_NO, STD_AGE, STD_NAME, S.MAJOR_CODE, STATUS, MAJOR_NAME
+					FROM KH_STUDENT S
+					JOIN KH_MAJOR M ON S.MAJOR_CODE = M.MAJOR_CODE
 					WHERE STD_NO = ?
 					""";
 
@@ -127,6 +131,7 @@ public class StudentDAO {
 				String stdName = rs.getString("STD_NAME");
 				String major = rs.getString("MAJOR_CODE");
 				String status = rs.getString("STATUS");
+				String majorName = rs.getString("MAJOR_NAME");
 
 				stdInfo = new Student();
 
@@ -135,6 +140,7 @@ public class StudentDAO {
 				stdInfo.setStdName(stdName);
 				stdInfo.setMajor(major);
 				stdInfo.setStatus(status);
+				stdInfo.setMajorName(majorName);
 			}
 		} finally {
 			close(rs);
@@ -271,9 +277,17 @@ public class StudentDAO {
 		List<Student> stdList = new ArrayList<>();
 		try {
 			String sql = """
-					SELECT STD_NO, STD_NAME, STD_AGE, MAJOR_CODE, TO_CHAR(ENT_DATE, 'YYYY-MM-DD') "ENT_DATE", STATUS
-					FROM KH_STUDENT
-					WHERE MAJOR_CODE = ?
+					SELECT
+					    S.STD_NO,
+					    S.STD_NAME,
+					    S.STD_AGE,
+					    S.MAJOR_CODE,
+					    TO_CHAR(S.ENT_DATE, 'YYYY-MM-DD') AS ENT_DATE,
+					    S.STATUS,
+					    M.MAJOR_NAME
+					FROM KH_STUDENT S
+					JOIN KH_MAJOR M ON S.MAJOR_CODE = M.MAJOR_CODE
+					WHERE S.MAJOR_CODE = ?
 					""";
 			pstmt = conn.prepareStatement(sql);
 
@@ -288,16 +302,17 @@ public class StudentDAO {
 				String majorInfo = rs.getString("MAJOR_CODE");
 				String entDate = rs.getString("ENT_DATE");
 				String status = rs.getString("STATUS");
+				String majorName = rs.getString("MAJOR_NAME");
 
-				
 				Student student = new Student();
 				student.setStdNo(stdNo);
 				student.setStdName(stdName);
 				student.setStdAge(stdAge);
-				student.setMajor(major);
+				student.setMajor(majorInfo);
 				student.setEntDate(entDate);
 				student.setStatus(status);
-				
+				student.setMajorName(majorName);
+
 				stdList.add(student);
 			}
 		} finally {
@@ -370,12 +385,3 @@ public class StudentDAO {
 	}
 
 }
-
-
-
-
-
-
-
-
-
